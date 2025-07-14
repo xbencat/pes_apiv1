@@ -29,5 +29,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run tests
+        working-directory: .
         run: docker compose -f compose/docker-compose.ci.yml run --rm api pytest -vv
 

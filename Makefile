@@ -1,6 +1,11 @@
 # Makefile for managing Docker Compose environments
 
-# Build the Docker image
+# Build the Docker image for local development
+build-local:
+	@echo "Building Docker image for local development..."
+	docker compose -f compose/local/docker-compose.yml build
+
+# Build the Docker image (generic)
 build:
 	@echo "Building Docker image..."
 	docker compose -f compose/local/docker-compose.yml build
@@ -17,6 +22,10 @@ down-local:
 logs-local:
 	@echo "Showing logs for local environment..."
 	docker compose -f compose/local/docker-compose.yml logs -f
+
+shell-local:
+	@echo "Opening shell in local api container..."
+	docker compose -f compose/local/docker-compose.yml exec api /bin/bash
 
 # --- Stage Environment ---
 up-stage:

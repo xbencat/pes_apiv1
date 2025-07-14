@@ -1,32 +1,46 @@
-FROM python:3.11.4-slim-bullseye AS prod
-RUN apt-get update && apt-get install -y \
-  gcc \
-  && rm -rf /var/lib/apt/lists/*
+FROM python:3.11.4-slim-bullseye AS base
 
+RUN apt-get update && apt-get install -y \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN pip install poetry==1.8.2
 
-# Configuring poetry
 RUN poetry config virtualenvs.create false
 RUN poetry config cache-dir /tmp/poetry_cache
 
-# Copying requirements of a project
-COPY pyproject.toml poetry.lock /app/src/
-WORKDIR /app/src
+WORKDIR /app
 
-# Installing requirements
-RUN --mount=type=cache,target=/tmp/poetry_cache poetry install --only main
-# Removing gcc
-RUN apt-get purge -y \
-  gcc \
-  && rm -rf /var/lib/apt/lists/*
+COPY pyproject.toml poetry.lock ./
 
-# Copying actuall application
-COPY . /app/src/
-RUN --mount=type=cache,target=/tmp/poetry_cache poetry install --only main
+FROM base AS prod
+RUN --mount=type=cache,target=/tmp/poetry_cache \
+    poetry install --only main --no-dev
 
-CMD ["/usr/local/bin/python", "-m", "pes_apiv1"]
+COPY . .
 
-FROM prod AS dev
+RUN apt-get purge -y gcc && \
+    apt-get autoremove -y && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN --mount=type=cache,target=/tmp/poetry_cache poetry install
+CMD ["python", "-m", "pes_apiv1"]
+
+FROM base AS dev
+# Install all dependencies
+RUN --mount=type=cache,target=/tmp/poetry_cache \
+    poetry install
+
+# Create PyCharm helpers directory
+RUN mkdir -p /opt/.pycharm_helpers
+
+# Install some additional tools that PyCharm might need
+RUN pip install setuptools wheel
+
+COPY . .
+
+# Install the package in editable mode
+RUN --mount=type=cache,target=/tmp/poetry_cache \
+    poetry install --only-root
+
+# Verify installation
+CMD ["python", "-m", "pes_apiv1"]

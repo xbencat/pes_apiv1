@@ -3,12 +3,17 @@ services:
     build:
       context: ../..
       dockerfile: ./compose/Dockerfile
+      target: dev
     image: pes_apiv1:${PES_APIV1_VERSION:-latest}
     restart: always
     env_file:
       - .env
     ports:
       - "8000:8000"
+    volumes:
+      - ../../:/app
+    environment:
+      - PYTHONPATH=/app
     labels:
       # Enables traefik for this container.
       - traefik.enable=true
@@ -54,8 +59,10 @@ services:
 volumes:
   pes_apiv1-db-data:
     name: pes_apiv1-db-data
+    external: true
 
 networks:
   # Network for traefik.
   traefik-shared:
     name: traefik-shared
+    external: true

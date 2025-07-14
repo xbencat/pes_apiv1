@@ -2,7 +2,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: ./compose/Dockerfile
     image: pes_apiv1_ci
     environment:
       PES_APIV1_ENVIRONMENT: pytest

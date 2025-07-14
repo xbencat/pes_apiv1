@@ -2,7 +2,7 @@ services:
   api: &main_app
     build:
       context: ../..
-      dockerfile: ./Dockerfile
+      dockerfile: ./compose/Dockerfile
     image: pes_apiv1:${PES_APIV1_VERSION:-latest}
     restart: always
     env_file:

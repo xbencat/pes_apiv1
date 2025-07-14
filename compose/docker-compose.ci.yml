@@ -1,7 +1,7 @@
 services:
   api:
     build:
-      context: .
+      context: ..
       dockerfile: ./compose/Dockerfile
     image: pes_apiv1_ci
     environment:

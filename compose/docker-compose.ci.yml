@@ -13,6 +13,11 @@ services:
       POSTGRES_PASSWORD: pes_apiv1
       POSTGRES_DB: pes_apiv1_test
       PES_APIV1_DB_ECHO: "False"
+      PES_APIV1_HOST: "0.0.0.0"
+      PES_APIV1_PORT: 8000
+      PES_APIV1_WORKERS_COUNT: 1
+      PES_APIV1_RELOAD: "False"
+      PES_APIV1_LOG_LEVEL: "INFO"
     depends_on:
       db:
         condition: service_healthy

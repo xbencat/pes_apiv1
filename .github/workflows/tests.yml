@@ -28,16 +28,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Create .env
-        run: touch .env
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - name: Update docker-compose
-        uses: KengoTODA/actions-setup-docker-compose@v1
-        with:
-          version: "2.28.0"
-      - name: run tests
-        run: docker-compose run --rm api pytest -vv
+      - name: Run tests
+        run: docker compose -f compose/docker-compose.ci.yml run --rm api pytest -vv
 

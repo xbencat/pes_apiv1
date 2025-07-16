@@ -8,7 +8,7 @@ This API is part of a web application for loan evidence and management for natur
 
 ## Prerequisites
 
-- **Docker** (tested on Ubuntu 24.04, Fedora 41, and similar distributions)
+- **Docker**
 - **Docker Compose** (or `docker compose` plugin)
 - No additional dependencies required
 
@@ -110,8 +110,6 @@ The infrastructure supports lookup by:
 
 ## Development Notes
 
-- **Language**: English codebase with UTF-8 encoding
-- **Code Style**: 4 spaces indentation, LF line endings
 - **Framework**: FastAPI with async/await patterns
 - **Database**: SQLAlchemy ORM with PostgreSQL
 - **Validation**: Pydantic schemas with comprehensive validation

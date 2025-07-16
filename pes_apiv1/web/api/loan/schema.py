@@ -1,7 +1,6 @@
-import uuid
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class LoanSchema(BaseModel):
@@ -18,16 +17,6 @@ class LoanSchema(BaseModel):
     notes: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
-
-    @field_validator("loan_id", "owner_person_id")
-    @classmethod
-    def validate_uuid_format(cls, v: str) -> str:
-        """Validate UUID format for ID fields."""
-        try:
-            uuid.UUID(v)
-            return v
-        except ValueError as e:
-            raise ValueError("Must be a valid UUID format") from e
 
 
 class LoanListSchema(BaseModel):
@@ -47,13 +36,3 @@ class LoanListSchema(BaseModel):
     loan_due_date: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
-
-    @field_validator("loan_id")
-    @classmethod
-    def validate_loan_id_uuid(cls, v: str) -> str:
-        """Validate UUID format for loan ID."""
-        try:
-            uuid.UUID(v)
-            return v
-        except ValueError as e:
-            raise ValueError("Must be a valid UUID format") from e

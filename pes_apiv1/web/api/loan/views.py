@@ -6,10 +6,19 @@ from pes_apiv1.db.dao.loan_dao import LoanDAO
 from pes_apiv1.db.models.loan_list import LoanList
 from pes_apiv1.web.api.loan.schema import LoanListSchema, LoanSchema
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/loans",
+    tags=["Loans"],
+    responses={404: {"description": "Not found"}},
+)
 
 
-@router.get("/loans", response_model=List[LoanListSchema])
+@router.get(
+    "",
+    response_model=List[LoanListSchema],
+    summary="Get all loans",
+    description="Retrieve all loan objects for a user identified by EDUID",
+)
 async def get_loans(
     eduid: int = Query(...),
     search: Optional[str] = None,
@@ -54,7 +63,12 @@ async def get_loans(
         raise HTTPException(status_code=500, detail=f"Failed to retrieve loans: {e!s}") from e
 
 
-@router.get("/loans/{loan_id}", response_model=LoanSchema)
+@router.get(
+    "/{loan_id}",
+    response_model=LoanSchema,
+    summary="Get loan by ID",
+    description="Retrieve a specific loan object by its ID for a user identified by EDUID",
+)
 async def get_loan(
     loan_id: str,
     eduid: int = Query(...),

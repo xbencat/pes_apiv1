@@ -115,3 +115,31 @@ The infrastructure supports lookup by:
 - **Validation**: Pydantic schemas with comprehensive validation
 - **Logging**: Structured logging with Loguru
 - **Error Handling**: Proper HTTP status codes and error messages
+
+## Production Deployment Considerations
+
+**Note**: This is a demo implementation. In production, the following would be added:
+
+### CI/CD Pipeline
+- **Branch-based deployment**: `main` → production, `stage` → staging, `develop` → tests only
+- **GitHub Actions/GitLab CI** with automated testing, building, and deployment
+- **Environment-specific Docker Compose** files for each environment
+
+### Secrets Management
+For sharing API keys (Google Maps, etc.) securely:
+
+```bash
+# Option 1: Encrypted environment files
+git-crypt unlock
+cp compose/local/.env.encrypted compose/local/.env
+
+# Option 2: External secrets (Vault, AWS Secrets Manager)
+make secrets-pull-local
+```
+
+### Additional Production Features
+- Infrastructure as Code (Terraform)
+- Kubernetes deployment manifests
+- Monitoring and logging (Prometheus, ELK)
+- Database migrations with rollback
+- Blue-green deployments

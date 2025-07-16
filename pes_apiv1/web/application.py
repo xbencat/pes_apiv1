@@ -41,7 +41,10 @@ def get_app() -> FastAPI:
             ],
         )
     app = FastAPI(
-        title="pes_apiv1",
+        title="PES APIv1",
+        description=(
+            "REST API for Portál Elektronických Služieb (Portal of Electronic Services) - A loan management system"
+        ),
         version=metadata.version("pes_apiv1"),
         lifespan=lifespan_setup,
         docs_url="/api/docs",

@@ -1,4 +1,21 @@
 services:
+  traefik:
+    image: traefik:v3.0
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --providers.docker.network=traefik-shared
+    ports:
+      - "80:80"
+      - "8080:8080"  # Traefik dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - traefik-shared
+    restart: always
+
   api: &main_app
     build:
       context: ../..
@@ -8,8 +25,8 @@ services:
     restart: always
     env_file:
       - .env
-    ports:
-      - "80:8000"
+    # ports:
+    #   - "80:8000"
     volumes:
       - ../../:/app
     environment:
@@ -17,8 +34,8 @@ services:
     labels:
       # Enables traefik for this container.
       - traefik.enable=true
-      - traefik.http.routers.pes_apiv1.rule=Host(`${PES_APIV1_TRAEFIK_HOST:-pes_apiv1.localhost}`)
-      - traefik.http.routers.pes_apiv1.entrypoints=http
+      - traefik.http.routers.pes_apiv1.rule=Host(`localhost`) || Host(`pes-api.local`)
+      - traefik.http.routers.pes_apiv1.entrypoints=web
       - traefik.http.routers.pes_apiv1.service=pes_apiv1
       - traefik.http.services.pes_apiv1.loadbalancer.server.port=${PES_APIV1_PORT:-8000}
     networks:

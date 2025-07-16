@@ -1,54 +1,78 @@
-# Makefile for managing Docker Compose environments
+# Makefile for PES APIv1 - Loan Management System
 
-# Build the Docker image for local development
-build-local:
-	@echo "Building Docker image for local development..."
-	docker compose -f compose/local/docker-compose.yml build
+# Default Docker Compose file for local development
+COMPOSE_FILE = compose/local/docker-compose.yml
 
-# Build the Docker image (generic)
+# === Main Commands ===
+
+# Build the Docker image
 build:
 	@echo "Building Docker image..."
-	docker compose -f compose/local/docker-compose.yml build
+	docker compose -f $(COMPOSE_FILE) build
 
-# --- Local Environment ---
-up-local:
-	@echo "Starting local environment..."
-	docker compose -f compose/local/docker-compose.yml up -d
+# Start the application (API + Database + Migrations)
+up:
+	@echo "Starting PES APIv1 application..."
+	docker compose -f $(COMPOSE_FILE) up -d
+	@echo "Application started successfully!"
+	@echo "API Documentation: http://localhost/api/docs"
+	@echo "API Base URL: http://localhost/api"
 
-down-local:
-	@echo "Stopping local environment..."
-	docker compose -f compose/local/docker-compose.yml down
+# Stop the application
+down:
+	@echo "Stopping PES APIv1 application..."
+	docker compose -f $(COMPOSE_FILE) down
 
-logs-local:
-	@echo "Showing logs for local environment..."
-	docker compose -f compose/local/docker-compose.yml logs -f
+# View application logs
+logs:
+	@echo "Showing application logs..."
+	docker compose -f $(COMPOSE_FILE) logs -f
 
-shell-local:
-	@echo "Opening shell in local api container..."
-	docker compose -f compose/local/docker-compose.yml exec api /bin/bash
+# === Development Commands ===
 
-# --- Stage Environment ---
-up-stage:
-	@echo "Starting stage environment..."
-	docker compose -f compose/stage/docker-compose.yml up -d
+# Open shell in the API container
+shell:
+	@echo "Opening shell in API container..."
+	docker compose -f $(COMPOSE_FILE) exec api /bin/bash
 
-down-stage:
-	@echo "Stopping stage environment..."
-	docker compose -f compose/stage/docker-compose.yml down
+# Restart the application
+restart: down up
 
-logs-stage:
-	@echo "Showing logs for stage environment..."
-	docker compose -f compose/stage/docker-compose.yml logs -f
+# Clean up everything (containers, volumes, images)
+clean:
+	@echo "Cleaning up Docker resources..."
+	docker compose -f $(COMPOSE_FILE) down -v
+	docker system prune -f
 
-# --- Production Environment ---
-up-production:
-	@echo "Starting production environment..."
-	docker compose -f compose/production/docker-compose.yml up -d
+# === Testing Commands ===
 
-down-production:
-	@echo "Stopping production environment..."
-	docker compose -f compose/production/docker-compose.yml down
+# Test API endpoints
+test:
+	@echo "Testing API endpoints..."
+	@curl -s http://localhost/api/docs > /dev/null && echo "API is responding" || echo "API is not responding"
 
-logs-production:
-	@echo "Showing logs for production environment..."
-	docker compose -f compose/production/docker-compose.yml logs -f
+# === Help ===
+
+help:
+	@echo "PES APIv1 - Available Commands:"
+	@echo ""
+	@echo "Main Commands:"
+	@echo "  make build    - Build the Docker image"
+	@echo "  make up       - Start the application"
+	@echo "  make down     - Stop the application"
+	@echo "  make logs     - View application logs"
+	@echo ""
+	@echo "Development:"
+	@echo "  make shell    - Open shell in API container"
+	@echo "  make restart  - Restart the application"
+	@echo "  make clean    - Clean up all Docker resources"
+	@echo ""
+	@echo "Testing:"
+	@echo "  make test     - Test if API is responding"
+	@echo ""
+	@echo "Quick Start:"
+	@echo "  cp compose/local/.env.example compose/local/.env"
+	@echo "  make build && make up"
+
+# Default target
+.DEFAULT_GOAL := help

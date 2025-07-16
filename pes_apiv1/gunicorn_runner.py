@@ -19,7 +19,7 @@ class UvicornWorker(BaseUvicornWorker):
     to pass these parameters through gunicorn.
     """
 
-    CONFIG_KWARGS: dict[str, Any] = {  # typing: ignore  # noqa: RUF012
+    CONFIG_KWARGS: dict[str, Any] = {  # typing: ignore
         "loop": "uvloop" if uvloop is not None else "asyncio",
         "http": "httptools",
         "lifespan": "on",

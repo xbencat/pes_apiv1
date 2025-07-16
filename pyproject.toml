@@ -120,6 +120,7 @@ lint.ignore = [
     "ANN401",  # typing.Any are disallowed in `**kwargs
     "PLR0913", # Too many arguments for function call
     "D106",    # Missing docstring in public nested class
+    "RUF012",  # Ignore mutable class attributes warning (SQLAlchemy-friendly)
 ]
 exclude = [
     "pes_apiv1/db/migrations",

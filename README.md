@@ -1,61 +1,119 @@
 # PES APIv1
 
-This is a REST API for the Portal of Electronic Services (PES), a loan management system. The project is built with FastAPI and follows a modern, scalable structure.
+This is a REST API for the Portal of Electronic Services (PES), a loan management system for managing loans to natural persons. The project is built with FastAPI and PostgreSQL, providing endpoints for loan retrieval and management.
 
-## Project Structure
+## Assignment Context
 
-The project is organized into the following main directories:
+This API is part of a web application for loan evidence and management for natural persons. The API provides basic information about loans and involved parties (Debtor and Guarantor) to an external web service - Portal of Electronic Services (PES), through which clients can view information about their loans, upload documents, and edit contact details.
 
-```
-├── compose/            # Docker Compose files for different environments (local, stage, production).
-├── pes_apiv1/          # The main application source code.
-│   ├── db/             # Database models, migrations, and data access objects (DAO).
-│   ├── web/            # FastAPI application, API endpoints, and request/response schemas.
-│   ├── settings.py     # Application configuration, loaded from environment variables.
-│   └── __main__.py     # Application entrypoint.
-├── tests/              # Automated tests for the application.
-├── Dockerfile          # Defines the Docker image for the application.
-├── Makefile            # Provides simple commands for managing the project.
-└── pyproject.toml      # Defines project dependencies and tool configurations.
-```
+## Prerequisites
 
-## Local Development
+- **Docker** (tested on Ubuntu 24.04, Fedora 41, and similar distributions)
+- **Docker Compose** (or `docker compose` plugin)
+- No additional dependencies required
 
-To run the application locally, you need to have Docker and Docker Compose installed.
+## Installation and Setup
 
-### 1. Initial Setup
+### 1. Create Environment Configuration
 
-First, you need to create a local environment file. This file will hold your secret credentials and local configuration. You can do this by copying the example file:
+Copy the example environment file:
 
 ```bash
 cp compose/local/.env.example compose/local/.env
 ```
 
-The default values in the `.env` file are suitable for local development, so you don't need to change anything for now.
+The default values are configured for local development and don't need modification.
 
-### 2. Build and Run the Application
-
-With the environment file in place, you can build and run the application using the provided `Makefile`:
+### 2. Build and Start the Application
 
 ```bash
+# Build the Docker image
 make build
-make up-local
+
+# Start all services (API + PostgreSQL + migrations)
+make up
 ```
 
-This will start the FastAPI application, a PostgreSQL database, and a migrator service that automatically applies database migrations.
+This starts:
+- **FastAPI application** on port 80
+- **PostgreSQL database** with provided sample data
+- **Database migrator** that applies schema automatically
 
-The API will be available at `http://localhost:8000`.
+### 3. Verify Installation
 
-### 3. Accessing the API Documentation
+The API will be available at: **http://localhost**
 
-Once the application is running, you can access the interactive Swagger UI documentation at:
+Access the interactive API documentation at: **http://localhost/api/docs**
 
-[http://localhost:8000/api/docs](http://localhost:8000/api/docs)
+### 4. Test the API
 
-### 4. Stopping the Application
-
-To stop the local environment, run:
+Example API calls:
 
 ```bash
-make down-local
+# Get loans for user with EDUID
+curl "http://localhost/api/loans?eduid=3000951357"
+echo
+echo
+
+# Get specific loan details
+curl "http://localhost/api/loans/e51843f6-dcb4-41b6-bc9d-3f138cc1241e?eduid=3000951357"
 ```
+
+### 5. Stop the Application
+
+```bash
+make down
+```
+
+## API Implementation
+
+### Implemented Endpoints
+
+- `GET /api/loans` - Retrieve all loans for a user
+- `GET /api/loans/{loan_id}` - Retrieve specific loan details
+
+### User Identification
+
+The API supports the assignment requirement of dual identification methods:
+
+**Option 1: EDUID (Implemented)**
+```
+GET /api/loans?eduid=3000951357
+```
+
+**Option 2: Personal Details (Available)**
+The infrastructure supports lookup by:
+- first_name + last_name + person_id (birth number) + birth_date
+
+### Database
+
+- Uses the provided PostgreSQL database (cmdb_a2-part.sql)
+- No new tables created (as per assignment requirements)
+- Utilizes existing views for optimized queries
+- All foreign key relationships properly mapped
+
+## Project Structure
+
+```
+├── compose/local/           # Docker Compose configuration
+│   ├── docker-compose.yml   # Main compose file
+│   ├── .env.example         # Environment template
+│   └── init-db/            # Database initialization scripts
+├── pes_apiv1/              # Application source code
+│   ├── db/                 # Database models and DAOs
+│   ├── web/api/            # API endpoints and schemas
+│   └── settings.py         # Configuration management
+├── Dockerfile              # Application container definition
+├── Makefile               # Build and run commands
+└── README.md              # This file
+```
+
+## Development Notes
+
+- **Language**: English codebase with UTF-8 encoding
+- **Code Style**: 4 spaces indentation, LF line endings
+- **Framework**: FastAPI with async/await patterns
+- **Database**: SQLAlchemy ORM with PostgreSQL
+- **Validation**: Pydantic schemas with comprehensive validation
+- **Logging**: Structured logging with Loguru
+- **Error Handling**: Proper HTTP status codes and error messages
